@@ -1,0 +1,201 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+body { font-family: 'DM Sans', sans-serif; background-color: #fdf9f5; color: #1C2B40; margin: 0; }
+html { scroll-behavior: smooth; }
+.font-syne { font-family: 'Syne', sans-serif; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #F6EACB; border-radius: 10px; }
+::-webkit-scrollbar-thumb { background: #D1E9F6; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #2E7DF7; }
+::selection { background: #D1E9F6; color: #0B1F3A; }
+
+/* ── Animations ── */
+@keyframes fade-up   { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes scale-in  { from{opacity:0;transform:scale(.93)} to{opacity:1;transform:scale(1)} }
+@keyframes slide-in  { from{transform:translateX(-100%);opacity:0} to{transform:translateX(0);opacity:1} }
+@keyframes slide-up  { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes float     { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+@keyframes float2    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.85)} }
+@keyframes shimmer   { 0%{background-position:-200% center} 100%{background-position:200% center} }
+@keyframes spin      { to{transform:rotate(360deg)} }
+@keyframes drift1    { 0%,100%{transform:translate(0,0) rotate(0deg)} 33%{transform:translate(8px,-12px) rotate(4deg)} 66%{transform:translate(-6px,6px) rotate(-3deg)} }
+@keyframes drift2    { 0%,100%{transform:translate(0,0) rotate(0deg)} 33%{transform:translate(-10px,8px) rotate(-5deg)} 66%{transform:translate(6px,-10px) rotate(3deg)} }
+@keyframes blink     { 0%,100%{opacity:1} 50%{opacity:0} }
+@keyframes glitch1   { 0%,94%,100%{transform:translate(-3px,0);opacity:0} 95%{transform:translate(-3px,0);opacity:.7} 96%{transform:translate(3px,0);opacity:.7} 97%{transform:translate(-3px,0);opacity:0} }
+@keyframes glitch2   { 0%,94%,100%{transform:translate(3px,0);opacity:0} 95%{transform:translate(3px,0);opacity:.6} 96%{transform:translate(-3px,0);opacity:.6} 97%{transform:translate(3px,0);opacity:0} }
+
+/* ── Animation classes ── */
+.anim-fade-up   { animation: fade-up  .5s ease both; }
+.anim-scale-in  { animation: scale-in .35s ease both; }
+.anim-d1{animation-delay:.07s} .anim-d2{animation-delay:.14s} .anim-d3{animation-delay:.21s}
+.anim-d4{animation-delay:.28s} .anim-d5{animation-delay:.35s} .anim-d6{animation-delay:.42s}
+.animate-float      { animation: float     3.5s ease-in-out infinite; }
+.animate-float2     { animation: float2    4.2s ease-in-out infinite; }
+.animate-pulse-dot  { animation: pulse-dot 2s   ease-in-out infinite; }
+.panel-card         { animation: float     5s   ease-in-out infinite; }
+.panel-card-2       { animation: float2    6s   ease-in-out infinite; animation-delay:1.5s; }
+.float-emoji        { animation: float     4s   ease-in-out infinite; }
+.drift1             { animation: drift1    7s   ease-in-out infinite; }
+.drift2             { animation: drift2    9s   ease-in-out infinite; }
+.cursor-blink       { animation: blink     1s   step-end    infinite; }
+
+/* ── Buttons ── */
+.shimmer-btn {
+  background: linear-gradient(90deg, #1A4A8A 0%, #2E7DF7 45%, #1A4A8A 100%);
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+  transition: box-shadow .2s;
+}
+.shimmer-btn:hover    { box-shadow: 0 8px 24px rgba(46,125,247,.35); }
+.shimmer-btn:disabled { opacity:.5; cursor:not-allowed; animation:none; background:#94A3B8; }
+.shimmer-btn-dark {
+  background: linear-gradient(90deg, #0f172a 0%, #334155 45%, #0f172a 100%);
+  background-size: 200% auto; animation: shimmer 3s linear infinite;
+}
+.shimmer-btn-green {
+  background: linear-gradient(90deg, #9b4a42 0%, #c97168 45%, #9b4a42 100%);
+  background-size: 200% auto; animation: shimmer 3s linear infinite;
+}
+.accept-btn {
+  background: linear-gradient(90deg, #9b4a42 0%, #c97168 45%, #9b4a42 100%);
+  background-size: 200% auto; animation: shimmer 3s linear infinite;
+}
+.accept-btn:hover { box-shadow: 0 6px 20px rgba(201,113,104,.4); }
+.danger-btn {
+  background: linear-gradient(90deg, #991B1B 0%, #EF4444 45%, #991B1B 100%);
+  background-size: 200% auto; animation: shimmer 3s linear infinite;
+}
+.danger-btn:hover { box-shadow: 0 6px 20px rgba(239,68,68,.35); }
+.reject-btn {
+  background: linear-gradient(90deg, #991B1B 0%, #EF4444 45%, #991B1B 100%);
+  background-size: 200% auto; animation: shimmer 3s linear infinite;
+}
+.reject-btn:hover { box-shadow: 0 6px 20px rgba(239,68,68,.35); }
+
+/* ── Input fields ── */
+.input-field {
+  width: 100%; padding: .7rem 1rem; border-radius: 10px;
+  border: 1.5px solid #E2E8F0; font-family: 'DM Sans', sans-serif;
+  font-size: .875rem; color: #1C2B40; background: #fdf9f5; outline: none;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+.input-field::placeholder { color: #94A3B8; }
+.input-field:focus {
+  border-color: #2E7DF7; background: #fff;
+  box-shadow: 0 0 0 3px rgba(209,233,246,.7);
+}
+select.input-field {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394A3B8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; padding-right: 2.5rem;
+}
+
+/* ── Cards ── */
+.card { background: #fff; border-radius: 16px; border: 1px solid #E8EDF5; }
+.card-hover { transition: all .2s ease; }
+.card-hover:hover { transform:translateY(-3px); box-shadow:0 8px 28px rgba(209,233,246,.6); border-color:#D1E9F6 !important; }
+.offer-card { transition: all .2s ease; }
+.offer-card:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(209,233,246,.5); border-color:#D1E9F6 !important; }
+
+/* ── Badges — palette colors ── */
+.badge { display:inline-flex; align-items:center; font-size:.7rem; font-weight:600; padding:.25rem .65rem; border-radius:100px; }
+.badge-blue   { background:#D1E9F6; color:#1A4A8A; }
+.badge-green  { background:#F1D3CE; color:#9b4a42; }
+.badge-orange { background:#F6EACB; color:#a0622a; }
+.badge-red    { background:#EECAD5; color:#b5394e; }
+.badge-slate  { background:#F1F5F9; color:#475569; }
+.badge-purple { background:#F5F3FF; color:#7C3AED; }
+
+/* ── Skill chips — cream ── */
+.skill-chip {
+  display: inline-flex; align-items: center; font-size: .72rem; font-weight: 500;
+  padding: .28rem .7rem; border-radius: 100px;
+  background: #F6EACB; color: #6b5226; border: 1.5px solid #e8d8a8;
+}
+
+/* ── Skill tags (register) ── */
+.skill-tag {
+  cursor: pointer; transition: all .18s; border: 1.5px solid #E2E8F0;
+  border-radius: 100px; padding: .3rem .85rem; font-size: .75rem; font-weight: 500;
+  background: #fdf9f5; color: #475569;
+}
+.skill-tag:hover  { border-color: #D1E9F6; color: #2E7DF7; }
+.skill-tag.active { border-color: #2E7DF7; background: #D1E9F6; color: #1A4A8A; }
+
+/* ── Sidebar ── */
+.sidebar-link {
+  display:flex; align-items:center; gap:.75rem; padding:.65rem 1rem;
+  border-radius:10px; font-size:.875rem; font-weight:500; color:#64748B;
+  cursor:pointer; transition:all .18s ease; text-decoration:none;
+}
+.sidebar-link:hover  { background:#F6EACB; color:#1C2B40; }
+.sidebar-link.active { background:#D1E9F6; color:#2E7DF7; font-weight:600; }
+
+/* ── Tabs ── */
+.tab-btn {
+  padding:.5rem 1rem; border-radius:8px; font-size:.83rem; font-weight:500;
+  cursor:pointer; transition:all .18s; border:none; background:transparent;
+  font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:.4rem;
+}
+.tab-btn.active   { background:#fff; color:#0B1F3A; box-shadow:0 1px 4px rgba(0,0,0,.1); }
+.tab-btn.inactive { color:#64748B; }
+.tab-btn.inactive:hover { color:#1C2B40; background:#F6EACB; }
+
+/* ── Progress bar ── */
+.progress-bar-inner {
+  height:100%; border-radius:100px;
+  background: linear-gradient(90deg, #2E7DF7, #D1E9F6);
+  transition: width .6s ease;
+}
+
+/* ── Misc utilities ── */
+.nav-blur { backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
+.dot-grid { background-image:radial-gradient(circle,#D1E9F640 1.2px,transparent 1.2px); background-size:24px 24px; }
+
+/* ── Upload zone ── */
+.upload-zone {
+  border:2px dashed #e8d8a8; border-radius:14px; padding:2rem;
+  text-align:center; cursor:pointer; transition:all .22s; background:#fdf9f5;
+}
+.upload-zone:hover  { border-color:#2E7DF7; background:#D1E9F6; }
+.upload-zone.filled { border-color:#c97168; border-style:solid; background:#F1D3CE; }
+.upload-zone.drag   { border-color:#2E7DF7; background:#D1E9F6; transform:scale(1.01); }
+
+/* ── Modal ── */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(15,23,42,.55);
+  backdrop-filter:blur(4px); z-index:50;
+  display:flex; align-items:center; justify-content:center; padding:1rem;
+}
+.modal-box {
+  background:#fff; border-radius:20px; width:100%; max-width:520px;
+  max-height:90vh; overflow-y:auto; padding:1.75rem;
+  animation:slide-up .3s ease both; box-shadow:0 24px 64px rgba(0,0,0,.15);
+}
+
+/* ── Candidate / app row ── */
+.candidate-row { transition:all .2s; cursor:pointer; }
+.candidate-row:hover   { background:#F6EACB; }
+.candidate-row.selected{ background:#D1E9F6; }
+.app-card { transition:all .2s ease; cursor:pointer; }
+.app-card:hover    { transform:translateY(-2px); box-shadow:0 6px 20px rgba(209,233,246,.5); }
+.app-card.selected { border-color:#2E7DF7 !important; background:#D1E9F6; }
+
+/* ── Mobile panels ── */
+.mobile-sidebar { position:fixed; left:0; top:0; bottom:0; width:240px; z-index:50; animation:slide-in .25s ease both; }
+.mobile-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:40; backdrop-filter:blur(2px); }
+
+/* ── 404 Glitch ── */
+.glitch { position:relative; }
+.glitch::before,.glitch::after { content:attr(data-text); position:absolute; inset:0; font-family:'Syne',sans-serif; font-weight:800; }
+.glitch::before { color:#D1E9F6; clip-path:polygon(0 0,100% 0,100% 35%,0 35%); transform:translate(-3px,0); animation:glitch1 4s infinite; }
+.glitch::after  { color:#EECAD5; clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%); transform:translate(3px,0); animation:glitch2 4s infinite; }

@@ -1,0 +1,9 @@
+Django
+djangorestframework
+djangorestframework-simplejwt
+django-cors-headers
+pillow
+python-decouple
+psycopg2-binary
+reportlab
+
