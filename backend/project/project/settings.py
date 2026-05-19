@@ -11,8 +11,9 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = [
     'stage-io-lr0s.onrender.com',
-    'localhost',
+    
     '127.0.0.1',
+     'localhost',
 ]
 
 # التطبيقات المثبتة
