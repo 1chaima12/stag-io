@@ -9,11 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = [
-    'stage-io-lr0s.onrender.com',
-    
-    '127.0.0.1',
-     'localhost',
+ALLOWED_HOSTS = ['*'
 ]
 
 # التطبيقات المثبتة
