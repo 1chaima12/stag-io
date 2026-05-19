@@ -90,7 +90,7 @@ export default function CompanyCandidates() {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('access_token');
-        const res = await axios.get('http://127.0.0.1:8000/api/company/applications/', {
+            const res = await axios.get('https://stag-io-lr0s.onrender.com/api/company/applications/', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setCandidates(res.data || []);
@@ -107,7 +107,7 @@ export default function CompanyCandidates() {
     try {
       const token = localStorage.getItem('access_token');
       await axios.patch(`
-        http://127.0.0.1:8000/api/applications/${id}/`,
+        https://stag-io-lr0s.onrender.com/api/applications/${id}/`,
         { status },
         { headers: { Authorization: `Bearer ${token} `} }
       );

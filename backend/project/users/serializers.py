@@ -31,7 +31,29 @@ class RegisterSerializer(serializers.ModelSerializer):
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = '__all__'
+        fields = 'all'
+
+
+# Serializer خاص ببروفايل الشركة (GET و PATCH)
+class CompanyProfileSerializer(serializers.ModelSerializer):
+    logo_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Company
+        fields = [
+            'id', 'name', 'email', 'phone', 'website', 'linkedin',
+            'wilaya', 'address', 'sector', 'size', 'founded',
+            'description', 'logo', 'logo_url',
+            'offers_count', 'accepted_count', 'is_validate',
+        ]
+        read_only_fields = ['is_validate', 'offers_count', 'accepted_count']
+        extra_kwargs = {'logo': {'required': False}}
+
+    def get_logo_url(self, obj):
+        request = self.context.get('request')
+        if obj.logo and request:
+            return request.build_absolute_uri(obj.logo.url)
+        return None
 
 
 class OfferSerializer(serializers.ModelSerializer):
@@ -53,9 +75,8 @@ class OfferSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if not request or not request.user:
             raise serializers.ValidationError({"detail": "يجب تسجيل الدخول أولاً."})
-        user = request.user
         try:
-            company = Company.objects.get(user=user)
+            company = Company.objects.get(user=request.user)
             validated_data['company'] = company
             return super().create(validated_data)
         except Company.DoesNotExist:
@@ -64,9 +85,9 @@ class OfferSerializer(serializers.ModelSerializer):
 
 class ApplicationSerializer(serializers.ModelSerializer):
     student_name = serializers.SerializerMethodField()
-    university = serializers.SerializerMethodField()
-    wilaya = serializers.SerializerMethodField()
-    skills = serializers.SerializerMethodField()
+    university   = serializers.SerializerMethodField()
+    wilaya       = serializers.SerializerMethodField()
+    skills       = serializers.SerializerMethodField()
 
     class Meta:
         model = Application
@@ -88,7 +109,8 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
 class StudentSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+
     class Meta:
         model = Student
-        fields = '__all__'
+        fields = 'all'
         read_only_fields = ['user']

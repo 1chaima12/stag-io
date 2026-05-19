@@ -9,8 +9,9 @@ from .serializers import (
     ApplicationSerializer,
     RegisterSerializer,
     CompanySerializer,
-    StudentSerializer,
+    StudentSerializer,CompanyProfileSerializer,
 )
+from rest_framework.parsers import MultiPartParser,FormParser,JSONParser
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -246,3 +247,28 @@ def get_accepted_applications(request):
     apps = Application.objects.filter(status='accepted')
     serializer = ApplicationSerializer(apps, many=True)
     return Response(serializer.data)
+
+# 2. بروفايل الشركة (GET + PATCH)
+# ───────────────────────────────────────────
+class CompanyProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def get(self, request):
+        company = Company.objects.filter(user=request.user).first()
+        if not company:
+            return Response({"error": "Company profile not found"}, status=404)
+        serializer = CompanyProfileSerializer(company, context={'request': request})
+        return Response(serializer.data)
+
+    def patch(self, request):
+        company = Company.objects.filter(user=request.user).first()
+        if not company:
+            return Response({"error": "Company profile not found"}, status=404)
+        serializer = CompanyProfileSerializer(
+            company, data=request.data, partial=True, context={'request': request}
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)

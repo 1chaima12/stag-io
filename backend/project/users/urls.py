@@ -4,8 +4,8 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from . import views
-
+from .views import CompanyProfileView
+from .import views
 # 1. إعداد الـ Router
 router = DefaultRouter()
 router.register(r'offers', views.OfferViewSet, basename='offer')
@@ -35,4 +35,5 @@ urlpatterns = [
     path('company/applications/', views.get_company_applications, name='company-apps'),
     path('admin/generate-agreement/<int:application_id>/', views.generate_agreement_pdf, name='generate-agreement'),
     path('admin/accepted-applications/', views.get_accepted_applications, name='accepted-apps'),
+    path('company/profile/',CompanyProfileView.as_view()),
 ]

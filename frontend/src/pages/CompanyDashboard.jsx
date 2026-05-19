@@ -26,7 +26,7 @@ export default function CompanyDashboard() {
       try {
        
         const token = localStorage.getItem('access_token');
-const res = await fetch('http://127.0.0.1:8000/api/dashboard-stats/', {
+const res = await fetch('https://stag-io-lr0s.onrender.com/api/dashboard-stats/', {
   headers: { Authorization: `Bearer ${token} `}
 });
 // ✅ بعد

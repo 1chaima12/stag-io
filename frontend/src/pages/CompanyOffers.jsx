@@ -130,7 +130,7 @@ export default function CompanyOffers() {
         const userData = JSON.parse(rawData);
         const token = userData.access; // تأكد أن المفتاح هو access
 
-        const res = await axios.get("http://127.0.0.1:8000/api/offers/", {
+        const res = await axios.get("https://stag-io-lr0s.onrender.com/api/offers/", {
             headers: {
                 Authorization: `Bearer ${token}`
             }
