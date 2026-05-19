@@ -11,7 +11,7 @@ export default function AdminAgreements() {
     const fetchAccepted = async () => {
       try {
         const token = localStorage.getItem('access_token');
-        const res = await axios.get('http://127.0.0.1:8000/api/admin/accepted-applications/', {
+        const res = await axios.get('https://stag-io-lr0s.onrender.com/api/admin/accepted-applications/', {
           headers: { Authorization: `Bearer ${token}` } // ✅ إصلاح
         });
 
@@ -35,7 +35,7 @@ export default function AdminAgreements() {
     try {
       const token = localStorage.getItem('access_token');
       const res = await axios.get(
-        `http://127.0.0.1:8000/api/admin/generate-agreement/${id}/`, // ✅ إصلاح
+        `https://stag-io-lr0s.onrender.com/api/admin/generate-agreement/${id}/`, // ✅ إصلاح
         {
           headers: { Authorization: `Bearer ${token} `}, // ✅ إصلاح
           responseType: 'blob'

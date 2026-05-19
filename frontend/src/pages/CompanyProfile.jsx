@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import CompanyLayout from "./CompanyLayout";
 import axios from "axios";
 
-const API = "http://127.0.0.1:8000/api";
+const API = "http://stag-io-lr0s.onrender.com/api";
 
 const WILAYAS = ["Alger","Oran","Constantine","Annaba","Béjaïa","Tizi Ouzou","Blida","Sétif","Tlemcen","Batna","Bordj Bou Arréridj","Boumerdès","Tipaza","Médéa","Djelfa"];
 const SECTORS = ["Technology","Telecommunications","Energy & Oil","Banking & Finance","Healthcare","Education","Manufacturing","Retail","Consulting","Transport & Logistics","Media","Agriculture"];

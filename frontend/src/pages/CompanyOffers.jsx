@@ -96,7 +96,7 @@ export default function CompanyOffers() {
     const [modal, setModal] = useState(null);
     const [delModal, setDelModal] = useState(null);
 
-    const API_URL = "http://127.0.0.1:8000/api/offers/";
+    const API_URL = "https://stag-io-lr0s.onrender.com/api/offers/";
 
     // دالة جلب الهيدرز مع التوكن الصحيح
     const getHeaders = () => {

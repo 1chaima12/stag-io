@@ -26,7 +26,7 @@ export default function AdminDashboard() {
       try {
         // جلب التوكن للتفويض
        const token = localStorage.getItem('access_token');
-const response = await axios.get("http://127.0.0.1:8000/api/admin/stats/", {
+const response = await axios.get("https://stag-io-lr0s.onrender.com/api/admin/stats/", {
   headers: { Authorization:` Bearer ${token} `}
 });
         setStatsData(response.data);

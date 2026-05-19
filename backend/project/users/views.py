@@ -55,29 +55,41 @@ class ApplicationViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_dashboard_stats(request):
-    company = Company.objects.filter(user=request.user).first()
+    try:
+        company = Company.objects.filter(user=request.user).first()
 
-    if not company:
+        if not company:
+            return Response({
+                "error": "Company profile not found",
+                "logged_in_as": request.user.email,
+                "hint": "تأكد من ربط هذا المستخدم بشركة في لوحة تحكم Django Admin"
+            }, status=404)
+
+        # تم تصحيح الـ status ليطابق الحروف الكبيرة المستعملة في الـ Models
+        stats = {
+            "active_offers": Offer.objects.filter(company=company).count(),
+            "total_applicants": Application.objects.filter(offer__company=company).count(),
+            "pending_review": Application.objects.filter(offercompany=company, statusiexact='PENDING').count(),
+            "accepted_interns": Application.objects.filter(offercompany=company, statusiexact='ACCEPTED').count(),
+        }
+
+        # جلب المتقدمين الأخيرين مع حماية السيرفر من الانهيار أثناء السيرياليزر
+        recent_applicants = Application.objects.filter(offer__company=company).order_by('-id')[:5]
+        serializer = ApplicationSerializer(recent_applicants, many=True)
+
         return Response({
-            "error": "Company profile not found",
-            "logged_in_as": request.user.email,
-            "hint": "تأكد من ربط هذا المستخدم بشركة في لوحة تحكم Django Admin"
-        }, status=404)
+            "stats": stats,
+            "recent_applicants": serializer.data,
+        }, status=200)
 
-    stats = {
-        "active_offers": Offer.objects.filter(company=company).count(),
-        "total_applicants": Application.objects.filter(offer__company=company).count(),
-        "pending_review": Application.objects.filter(offer__company=company, status='Pending').count(),
-        "accepted_interns": Application.objects.filter(offer__company=company, status='Accepted').count(),
-    }
+    except Exception as e:
+        # طباعة الخطأ الحقيقي في تيرمينال ريندر لمعرفته فوراً
+        print("🔴 Dashboard Stats Error:", str(e))
+        return Response({
+            "error": "Internal server error occurred",
+            "details": str(e)
+        }, status=500)
 
-    recent_applicants = Application.objects.filter(offer__company=company).order_by('-id')[:5]
-    serializer = ApplicationSerializer(recent_applicants, many=True)
-
-    return Response({
-        "stats": stats,
-        "recent_applicants": serializer.data,
-    })
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

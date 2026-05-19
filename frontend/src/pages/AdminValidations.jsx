@@ -66,7 +66,7 @@ export default function AdminValidations() {
   const fetchValidations = async () => {
     try {
       const token = localStorage.getItem("access_token");
-      const res = await axios.get("http://127.0.0.1:8000/api/admin/pending-companies/", {
+      const res = await axios.get("https://stag-io-lr0s.onrender.com/api/admin/pending-companies/", {
         headers: { Authorization:` Bearer ${token} `} // ✅ إصلاح
       });
 
@@ -94,7 +94,7 @@ export default function AdminValidations() {
     try {
       const token = localStorage.getItem("access_token");
       await axios.post(
-       ` http://127.0.0.1:8000/api/admin/approve-company/${id}/`, // ✅ إصلاح
+       ` https://stag-io-lr0s.onrender.com/api/admin/approve-company/${id}/`, // ✅ إصلاح
         {},
         { headers: { Authorization: `Bearer ${token} `} } // ✅ إصلاح
       );

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import StudentLayout from "./StudentLayout";
 
-const API_BASE_URL = "http://127.0.0.1:8000/api";
+const API_BASE_URL = "https://stag-io-lr0s.onrender.com/api";
 
 const TYPES = ["All", "On-site", "Hybrid", "Remote"];
 const LOCATIONS = ["All", "Alger", "Béjaïa", "Oran", "Constantine"];
