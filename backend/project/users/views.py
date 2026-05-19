@@ -143,6 +143,33 @@ class UserProfileView(APIView):
             }
         })
 
+    def put(self, request):
+        student, _ = Student.objects.get_or_create(user=request.user)
+        
+        # تحديث بيانات المستخدم
+        fullname = request.data.get('fullname')
+        if fullname:
+            request.user.fullname = fullname
+            request.user.save()
+        
+        # تحديث بيانات الطالب
+        serializer = StudentSerializer(student, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "message": "تم تحديث البروفايل بنجاح",
+                "username": request.user.username,
+                "fullname": request.user.fullname,
+                "student_details": {
+                    "university": student.university,
+                    "wilaya": student.wilaya,
+                }
+            })
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request):
+        return self.put(request)  # نفس منطق PUT
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = [AllowAny]

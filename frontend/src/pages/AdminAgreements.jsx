@@ -12,11 +12,13 @@ export default function AdminAgreements() {
       try {
         const token = localStorage.getItem('access_token');
         const res = await axios.get('http://127.0.0.1:8000/api/admin/accepted-applications/', {
-          headers: { Authorization:` Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` } // ✅ إصلاح
         });
-        setApplications(res.data || []);
-        // فلتر الطلبات المقبولة فقط
-        const accepted = res.data.filter(a => a.status === 'accepted'|| a.status=== 'Accepted');
+
+        // ✅ فلتر مرة واحدة فقط
+        const accepted = (res.data || []).filter(a =>
+          a.status === 'accepted' || a.status === 'Accepted'
+        );
         setApplications(accepted);
       } catch (err) {
         console.error(err);
@@ -27,27 +29,32 @@ export default function AdminAgreements() {
     fetchAccepted();
   }, []);
 
+  // ✅ إصلاح: أضف تنزيل الـ PDF
   const handleGenerate = async (id) => {
     setGenerating(id);
     try {
       const token = localStorage.getItem('access_token');
       const res = await axios.get(
-       ` http://127.0.0.1:8000/api/admin/generate-agreement/${id}/`,
+        `http://127.0.0.1:8000/api/admin/generate-agreement/${id}/`, // ✅ إصلاح
         {
-          headers: { Authorization:` Bearer ${token} `},
+          headers: { Authorization: `Bearer ${token} `}, // ✅ إصلاح
           responseType: 'blob'
         }
       );
-      // تحميل الـ PDF
+
+      // ✅ تنزيل الـ PDF تلقائياً
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `agreement_${id}.pdf`);
+      link.setAttribute('download',` agreement_${id}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
+      window.URL.revokeObjectURL(url);
+
     } catch (err) {
-      alert("Error generating PDF");
+      console.error("Error generating PDF:", err);
+      alert("Failed to generate PDF. Please try again.");
     } finally {
       setGenerating(null);
     }
@@ -80,9 +87,9 @@ export default function AdminAgreements() {
                 <button
                   onClick={() => handleGenerate(app.id)}
                   disabled={generating === app.id}
-                  className="shimmer-btn text-white px-6 py-2.5 rounded-xl text-sm font-semibold"
+                  className="shimmer-btn text-white px-6 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50"
                 >
-                  {generating === app.id ? "Generating..." : "📄 Generate PDF"}
+                  {generating === app.id ? "⏳ Generating..." : "📄 Generate PDF"}
                 </button>
               </div>
             ))}

@@ -1,12 +1,14 @@
 from rest_framework import serializers
 from .models import User, Offer, Application, Student, Company
 
+
 class UserSerializer(serializers.ModelSerializer):
     student_id = serializers.ReadOnlyField(source='student_profile.id')
 
     class Meta:
         model = User
         fields = ['id', 'username', 'fullname', 'role', 'email', 'student_id']
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -25,25 +27,32 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
+
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        # ✅ تصحيح: يجب أن تكون 'all' نصية وبها خطان سفليان
         fields = '__all__'
 
+
 class OfferSerializer(serializers.ModelSerializer):
-    type = serializers.CharField(source='internship_type', required=False)
+    company_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Offer
-        fields = ['id', 'title', 'description', 'wilaya', 'type', 'is_active', 'company']
+        fields = [
+            'id', 'title', 'description', 'wilaya',
+            'type', 'duration', 'domain',
+            'is_active', 'company', 'company_name'
+        ]
         read_only_fields = ['company']
+
+    def get_company_name(self, obj):
+        return obj.company.name if obj.company else ""
 
     def create(self, validated_data):
         request = self.context.get('request')
         if not request or not request.user:
             raise serializers.ValidationError({"detail": "يجب تسجيل الدخول أولاً."})
-
         user = request.user
         try:
             company = Company.objects.get(user=user)
@@ -51,6 +60,8 @@ class OfferSerializer(serializers.ModelSerializer):
             return super().create(validated_data)
         except Company.DoesNotExist:
             raise serializers.ValidationError({"detail": "هذا الحساب ليس له بروفايل شركة."})
+
+
 class ApplicationSerializer(serializers.ModelSerializer):
     student_name = serializers.SerializerMethodField()
     university = serializers.SerializerMethodField()
@@ -74,10 +85,10 @@ class ApplicationSerializer(serializers.ModelSerializer):
     def get_skills(self, obj):
         return obj.student.skills or []
 
+
 class StudentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
     class Meta:
         model = Student
-        # ✅ تصحيح: 'all' بدلاً من 'all' وكلمة fields صحيحة
         fields = '__all__'
-        # ✅ تصحيح إملائي: fields وليس feild
         read_only_fields = ['user']

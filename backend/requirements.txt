@@ -1,6 +1,0 @@
-django
-django-rest-framework
-django-cors-headers
-django-rest-framework-simplejwt
-Pillow  # لمعالجة الصور (شعار الشركة)
-psycopg2-binary  # إذا كنت ستستخدم قاعدة بيانات PostgreSQL

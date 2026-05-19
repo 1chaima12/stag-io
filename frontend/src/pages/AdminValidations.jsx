@@ -10,18 +10,16 @@ const STATUS_CFG = {
   agreement_generated: { badge: "badge-green", label: "PDF issued", icon: "📄" },
 };
 
-// مكون المودال الخاص باتفاقية التربص (كما هو مع تعديل بسيط للربط)
 function AgreementModal({ item, onClose, onGenerate }) {
   const [generating, setGenerating] = useState(false);
   const [done, setDone] = useState(false);
 
   const generate = () => {
     setGenerating(true);
-    // محاكاة عملية توليد PDF وإرسال إيميل
-    setTimeout(() => { 
-      setGenerating(false); 
-      setDone(true); 
-      onGenerate(item.id); 
+    setTimeout(() => {
+      setGenerating(false);
+      setDone(true);
+      onGenerate(item.id);
     }, 1800);
   };
 
@@ -35,12 +33,15 @@ function AgreementModal({ item, onClose, onGenerate }) {
               <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-xl">✕</button>
             </div>
             <div className="border border-slate-200 rounded-xl p-5 mb-5 bg-[#fdf9f5] text-sm">
-               <p><strong>Student:</strong> {item.name || item.student}</p>
-               <p><strong>Company:</strong> {item.name}</p>
-               <p><strong>Sector:</strong> {item.sector}</p>
+              <p><strong>Company:</strong> {item.name}</p>
+              <p><strong>Sector:</strong> {item.sector}</p>
+              <p><strong>Email:</strong> {item.email}</p>
             </div>
-            <button onClick={generate} disabled={generating}
-              className="shimmer-btn w-full text-white font-semibold py-3 rounded-xl text-sm flex items-center justify-center gap-2">
+            <button
+              onClick={generate}
+              disabled={generating}
+              className="shimmer-btn w-full text-white font-semibold py-3 rounded-xl text-sm flex items-center justify-center gap-2"
+            >
               {generating ? "Generating..." : "📄 Generate & Send Convention"}
             </button>
           </>
@@ -62,23 +63,19 @@ export default function AdminValidations() {
   const [selected, setSelected] = useState(null);
   const [modal, setModal] = useState(null);
 
-  // 1. جلب البيانات من Django
   const fetchValidations = async () => {
     try {
       const token = localStorage.getItem("access_token");
-      // هذا الرابط يجب أن يطابق ما وضعناه في urls.py بالخلفية
       const res = await axios.get("http://127.0.0.1:8000/api/admin/pending-companies/", {
-        headers: { Authorization: `Bearer ${token}`}
+        headers: { Authorization:` Bearer ${token} `} // ✅ إصلاح
       });
 
-      // تحويل البيانات لتناسب الواجهة
       const mapped = res.data.map(c => ({
         ...c,
         id: c.id,
-        student: "New Company Request", // بما أن الموديل حالياً للشركات
         company: c.name,
-        status: c.is_validated ? "validated" : "pending",
-        validated: c.is_validated
+        status: c.is_validate ? "validated" : "pending", // ✅ إصلاح: is_validate وليس is_validated
+        validated: c.is_validate
       }));
 
       setValidations(mapped);
@@ -93,17 +90,19 @@ export default function AdminValidations() {
     fetchValidations();
   }, []);
 
-  // 2. معالجة التفعيل (administration.validateInternship)
   const handleValidate = async (id) => {
     try {
       const token = localStorage.getItem("access_token");
-      await axios.post(`http://127.0.0.1:8000/api/admin/approve-company/${id}/`, {}, {
-        headers: { Authorization:` Bearer ${token} `}
-      });
+      await axios.post(
+       ` http://127.0.0.1:8000/api/admin/approve-company/${id}/`, // ✅ إصلاح
+        {},
+        { headers: { Authorization: `Bearer ${token} `} } // ✅ إصلاح
+      );
 
-      setValidations(prev => prev.map(v =>v.id === id ? { ...v, status: "validated", validated: true } : v
+      setValidations(prev => prev.map(v =>
+        v.id === id ? { ...v, status: "validated", validated: true } : v
       ));
-      
+
       if (selected?.id === id) {
         setSelected(prev => ({ ...prev, status: "validated", validated: true }));
       }
@@ -111,8 +110,6 @@ export default function AdminValidations() {
       alert("Error validating company. Check permissions.");
     }
   };
-
-  // 3. معالجة الاتفاقية
   const handleGenerate = (id) => {
     setValidations(prev => prev.map(v =>
       v.id === id ? { ...v, status: "agreement_generated", agreementGenerated: true } : v
@@ -135,7 +132,7 @@ export default function AdminValidations() {
   return (
     <AdminLayout active="validations" pendingCount={validations.filter(v => v.status === "pending").length}>
       <div className="p-5 md:p-8">
-        
+
         <div className="mb-6">
           <h1 className="font-syne font-extrabold text-slate-900 text-2xl md:text-3xl">Admin Validations</h1>
           <p className="text-slate-400 text-sm mt-1">Manage and verify new company registrations</p>
@@ -144,7 +141,11 @@ export default function AdminValidations() {
         {/* Tabs */}
         <div className="flex flex-wrap gap-1 bg-slate-100 rounded-xl p-1 w-fit mb-5">
           {TABS.map(t => (
-            <button key={t} onClick={() => setTab(t)} className={`tab-btn ${tab === t ? "active" : "inactive"}`}>
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`tab-btn ${tab === t ? "active" : "inactive"}`} // ✅ إصلاح
+            >
               {t}
             </button>
           ))}
@@ -153,12 +154,19 @@ export default function AdminValidations() {
         <div className="grid md:grid-cols-5 gap-5">
           {/* List */}
           <div className="md:col-span-2 space-y-2">
-            {filtered.map(v => (
-              <div key={v.id} onClick={() => setSelected(v)}
-                className={`card border cursor-pointer p-4 transition-all ${selected?.id === v.id ? "border-[#2E7DF7] bg-soft/30" : "border-slate-200"}`}>
+            {filtered.length === 0 ? (
+              <div className="text-center text-slate-400 py-10">No results</div>
+            ) : filtered.map(v => (
+              <div
+                key={v.id}
+                onClick={() => setSelected(v)}
+                className={`card border cursor-pointer p-4 transition-all ${selected?.id === v.id ? "border-[#2E7DF7] bg-soft/30" : "border-slate-200"}`} // ✅ إصلاح
+              >
                 <div className="flex justify-between items-start">
                   <div className="font-bold text-slate-800">{v.name}</div>
-                  <span className={`badge ${STATUS_CFG[v.status].badge}`}>{STATUS_CFG[v.status].label}</span>
+                  <span className={`badge ${STATUS_CFG[v.status]?.badge}`}> 
+                    {STATUS_CFG[v.status]?.label}
+                  </span>
                 </div>
                 <div className="text-xs text-slate-500 mt-1">{v.sector} · {v.email}</div>
               </div>
@@ -179,18 +187,36 @@ export default function AdminValidations() {
                     <p className="text-slate-400">Sector:</p>
                     <p className="font-semibold">{selected.sector}</p>
                   </div>
-                </div>
-
-                {/* Actions */}
+                  <div className="bg-slate-50 p-3 rounded-lg text-sm">
+                    <p className="text-slate-400">Wilaya:</p>
+                    <p className="font-semibold">{selected.wilaya}</p>
+                  </div>
+                  <div className="bg-slate-50 p-3 rounded-lg text-sm">
+                    <p className="text-slate-400">Status:</p>
+                    <p className="font-semibold">{STATUS_CFG[selected.status]?.label}</p>
+                  </div>
+                </div>{/* Actions */}
                 <div className="space-y-2">
                   {selected.status === "pending" && (
-                    <button onClick={() => handleValidate(selected.id)} className="shimmer-btn w-full text-white py-3 rounded-xl font-bold">
+                    <button
+                      onClick={() => handleValidate(selected.id)}
+                      className="shimmer-btn w-full text-white py-3 rounded-xl font-bold"
+                    >
                       ✅ Approve & Validate Company
                     </button>
                   )}
-                  {selected.status === "validated" && (<button onClick={() => setModal(selected)} className="shimmer-btn w-full text-white py-3 rounded-xl font-bold">
+                  {selected.status === "validated" && (
+                    <button
+                      onClick={() => setModal(selected)}
+                      className="shimmer-btn w-full text-white py-3 rounded-xl font-bold"
+                    >
                       📄 Issue Official Document
                     </button>
+                  )}
+                  {selected.status === "agreement_generated" && (
+                    <div className="text-center text-green-600 font-bold py-3">
+                      ✅ Agreement already issued
+                    </div>
                   )}
                 </div>
               </div>
@@ -207,7 +233,10 @@ export default function AdminValidations() {
         <AgreementModal
           item={modal}
           onClose={() => setModal(null)}
-          onGenerate={(id) => { handleGenerate(id); setTimeout(() => setModal(null), 2000); }}
+          onGenerate={(id) => {
+            handleGenerate(id);
+            setTimeout(() => setModal(null), 2000);
+          }}
         />
       )}
     </AdminLayout>

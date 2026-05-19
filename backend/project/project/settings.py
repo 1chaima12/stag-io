@@ -4,11 +4,16 @@ from datetime import timedelta
 from decouple import config
 
 # المسار الأساسي للمشروع
-BASE_DIR=Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
-DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = ['*']
+DEBUG = config('DEBUG', default=False, cast=bool)
+
+ALLOWED_HOSTS = [
+    '.onrender.com',
+    'localhost',
+    '127.0.0.1',
+]
 
 # التطبيقات المثبتة
 INSTALLED_APPS = [
@@ -18,12 +23,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # المكتبات الخارجية
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    
+    'whitenoise.runserver_nostatic',  # للملفات الثابتة في الإنتاج
+
     # تطبيقك الخاص
     'users',
 ]
@@ -31,6 +37,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # للملفات الثابتة
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -59,7 +66,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
-# قاعدة البيانات (SQLite للتطوير)
+# قاعدة البيانات
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -67,7 +74,6 @@ DATABASES = {
     }
 }
 
-# طراز المستخدم المخصص
 AUTH_USER_MODEL = 'users.User'
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -82,9 +88,10 @@ TIME_ZONE = 'Africa/Algiers'
 USE_I18N = True
 USE_TZ = True
 
-# --- الملفات الثابتة والمرفوعات (التصحيح النهائي هنا) ---
+# --- الملفات الثابتة ---
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -115,6 +122,10 @@ SIMPLE_JWT = {
 }
 
 # --- إعدادات CORS ---
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    # أضف رابط Vercel بعد النشر مثل:
+    # 'https://stag-io.vercel.app',
+]
 CORS_ALLOW_CREDENTIALS = True
-AUTH_USER_MODEL='users.User'

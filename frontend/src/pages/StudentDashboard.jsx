@@ -1,38 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import StudentLayout from "./StudentLayout";
 
 // --- بيانات تجريبية (Mock Data) ---
 const RECENT_OFFERS = [
-  { 
-    id: 1, 
-    title: "Full-Stack Developer", 
-    company: "Sonatrach Digital", 
-    location: "Alger", 
-    skills: ["React", "Node.js"], 
-    type: "On-site", 
-    duration: "6 months", 
-    new: true 
+  {
+    id: 1,
+    title: "Full-Stack Developer",
+    company: "Sonatrach Digital",
+    location: "Alger",
+    skills: ["React", "Node.js"],
+    type: "On-site",
+    duration: "6 months",
+    new: true,
+    description: "Sonatrach Digital is looking for a passionate Full-Stack Developer to join our innovation team. You will work on cutting-edge web applications serving millions of users across Algeria.",
+    requirements: ["3rd year CS student or above", "Experience with React & Node.js", "Good communication skills", "Available for 6 months"],
+    salary: "25,000 DZD/month",
+    deadline: "June 15, 2026",
   },
-  { 
-    id: 2, 
-    title: "Backend Engineer", 
-    company: "Djezzy Tech", 
-    location: "Alger", 
-    skills: ["Python", "Django"], 
-    type: "Hybrid", 
-    duration: "4 months", 
-    new: true 
+  {
+    id: 2,
+    title: "Backend Engineer",
+    company: "Djezzy Tech",
+    location: "Alger",
+    skills: ["Python", "Django"],
+    type: "Hybrid",
+    duration: "4 months",
+    new: true,
+    description: "Join Djezzy Tech as a Backend Engineer intern and work on scalable APIs powering our telecom services. You'll gain hands-on experience with Python and Django in a production environment.",
+    requirements: ["2nd year CS student or above", "Python & Django knowledge", "Understanding of REST APIs", "Available for 4 months"],
+    salary: "20,000 DZD/month",
+    deadline: "June 10, 2026",
   },
-  { 
-    id: 3, 
-    title: "Mobile Dev (Flutter)", 
-    company: "Cevital Digital", 
-    location: "Béjaïa", 
-    skills: ["Flutter", "Firebase"], 
-    type: "Remote", 
-    duration: "3 months", 
-    new: false 
+  {
+    id: 3,
+    title: "Mobile Dev (Flutter)",
+    company: "Cevital Digital",
+    location: "Béjaïa",
+    skills: ["Flutter", "Firebase"],
+    type: "Remote",
+    duration: "3 months",
+    new: false,
+    description: "Cevital Digital is seeking a Flutter developer to help build our next-generation mobile applications. This is a fully remote position, ideal for students from any region.",
+    requirements: ["Flutter & Dart knowledge", "Firebase experience is a plus", "Self-motivated and remote-ready", "Available for 3 months"],
+    salary: "18,000 DZD/month",
+    deadline: "May 30, 2026",
   },
 ];
 
@@ -55,11 +67,102 @@ const statusMap = {
   refused: { label: "Refused", cls: "bg-rose-100 text-rose-700" },
 };
 
+// --- Modal Component ---
+function OfferModal({ offer, onClose, onApply, applied }) {
+  if (!offer) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+      <div className="bg-white rounded-[2.5rem] shadow-2xl max-w-lg w-full p-8 relative animate-in fade-in duration-300 max-h-[90vh] overflow-y-auto">
+        
+        {/* Close Button */}
+        <button onClick={onClose} className="absolute top-6 right-6 text-slate-400 hover:text-slate-900 text-2xl font-black transition-colors">✕</button>
+
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-6">
+          <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-4xl">🏢</div>
+          <div>
+            <h2 className="text-2xl font-black text-slate-900 leading-tight">{offer.title}</h2>
+            <p className="text-sm text-slate-400 font-bold uppercase tracking-tighter mt-1">{offer.company} • {offer.location}</p>
+          </div>
+        </div>
+        {/* Badges */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {offer.skills.map(s => (
+            <span key={s} className="text-xs font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">{s}</span>
+          ))}
+          <span className="text-xs font-bold text-blue-500 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-100">{offer.type}</span>
+          <span className="text-xs font-bold text-purple-500 bg-purple-50 px-3 py-1.5 rounded-xl border border-purple-100">⏱ {offer.duration}</span>
+        </div>
+
+        {/* Info Grid */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="bg-slate-50 rounded-2xl p-4">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Salary</p>
+            <p className="text-sm font-black text-slate-900">{offer.salary}</p>
+          </div>
+          <div className="bg-slate-50 rounded-2xl p-4">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Deadline</p>
+            <p className="text-sm font-black text-slate-900">{offer.deadline}</p>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div className="mb-6">
+          <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-3">About the role</h3>
+          <p className="text-sm text-slate-600 leading-relaxed">{offer.description}</p>
+        </div>
+
+        {/* Requirements */}
+        <div className="mb-8">
+          <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-3">Requirements</h3>
+          <ul className="space-y-2">
+            {offer.requirements.map((req, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
+                <span className="text-blue-500 font-black mt-0.5">✓</span>
+                {req}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Apply Button */}
+        <button
+          onClick={() => onApply(offer.id)}
+          disabled={applied}
+          className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all ${
+            applied
+              ? "bg-green-100 text-green-600 cursor-not-allowed"
+              : "bg-slate-900 text-white hover:bg-blue-600 shadow-lg hover:shadow-blue-200"
+          }`}
+        >
+          {applied ? "✓ Application Sent!" : "Apply Now →"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// --- Main Component ---
 export default function StudentDashboard() {
+  const [selectedOffer, setSelectedOffer] = useState(null);
+  const [appliedOffers, setAppliedOffers] = useState([]);
+
+  const handleApply = (offerId) => {
+    setAppliedOffers(prev => [...prev, offerId]);
+  };
+
   return (
     <StudentLayout>
+      {/* Modal */}
+      <OfferModal
+        offer={selectedOffer}
+        onClose={() => setSelectedOffer(null)}
+        onApply={handleApply}
+        applied={selectedOffer && appliedOffers.includes(selectedOffer.id)}
+      />
+
       <div className="max-w-6xl mx-auto px-4 py-8 animate-in fade-in duration-700">
-        
+
         {/* --- Header --- */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
           <div>
@@ -67,15 +170,14 @@ export default function StudentDashboard() {
             <h1 className="text-4xl font-black text-slate-900 tracking-tight">Hello, Ayoub! 👋</h1>
             <p className="text-slate-500 font-medium mt-1">L3 Informatique · University of Constantine 2</p>
           </div>
-          <Link 
-            to="/student/search" 
+          <Link
+            to="/student/search"
             className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold text-sm shadow-xl hover:bg-blue-600 transition-all flex items-center gap-2 group"
           >
-            Explore Internships 
+            Explore Internships
             <span className="group-hover:translate-x-1 transition-transform">→</span>
           </Link>
         </div>
-
         {/* --- Stats Grid --- */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           {STATS.map((stat, i) => (
@@ -88,14 +190,14 @@ export default function StudentDashboard() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-10">
-          
+
           {/* --- Left Column: Recommended Offers --- */}
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between px-2">
               <h2 className="text-2xl font-black text-slate-900 tracking-tight">Recommended for you</h2>
               <Link to="/student/search" className="text-sm font-bold text-blue-600 hover:underline">View all</Link>
-              </div>
-            
+            </div>
+
             <div className="grid gap-4">
               {RECENT_OFFERS.map(offer => (
                 <div key={offer.id} className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm hover:border-blue-200 transition-all group">
@@ -112,18 +214,18 @@ export default function StudentDashboard() {
 
                   <div className="flex flex-wrap gap-2 mb-6">
                     {offer.skills.map(s => (
-                      <span key={s} className="text-[10px] font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">{s}</span>
+                      <span key={s} key={s} className="text-[10px] font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">{s}</span>
                     ))}
                     <span className="text-[10px] font-bold text-blue-500 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-100">{offer.type}</span>
                   </div>
 
-                  {/* ✅ زر View Details يعمل الآن وينقلك لصفحة البحث */}
-                  <Link 
-                    to="/student/search" 
+                  {/* زر View Details */}
+                  <button
+                    onClick={() => setSelectedOffer(offer)}
                     className="block w-full text-center py-4 bg-slate-50 text-slate-900 rounded-2xl font-black text-xs hover:bg-slate-900 hover:text-white transition-all uppercase tracking-widest"
                   >
-                    View Details & Apply
-                  </Link>
+                    {appliedOffers.includes(offer.id) ? "✓ Applied · View Details" : "View Details & Apply →"}
+                  </button>
                 </div>
               ))}
             </div>
@@ -131,7 +233,7 @@ export default function StudentDashboard() {
 
           {/* --- Right Column: Sidebar --- */}
           <div className="space-y-8">
-            
+
             {/* Quick Status Section */}
             <section>
               <h2 className="text-xl font-black text-slate-900 mb-6 px-2">Applications Status</h2>
@@ -157,14 +259,14 @@ export default function StudentDashboard() {
               <p className="text-blue-100 text-xs leading-relaxed mb-6">
                 Students who upload their <b>PDF CV</b> and <b>GitHub</b> link get noticed by top companies 3x faster.
               </p>
-              <Link 
-                to="/student/profile" 
+              <Link
+                to="/student/profile"
                 className="inline-block w-full text-center bg-white text-blue-600 px-6 py-4 rounded-2xl font-black text-xs hover:bg-slate-900 hover:text-white transition-all uppercase tracking-widest"
               >
                 Go to Profile
               </Link>
             </div>
-            </div>
+          </div>
         </div>
       </div>
     </StudentLayout>
