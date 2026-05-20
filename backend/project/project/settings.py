@@ -135,7 +135,7 @@ SIMPLE_JWT = {
 }
 
 # --- إعدادات CORS ---
-CORS_ALLOW__ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True
     
     # أضف رابط Vercel بعد النشر مثل:
     # 'https://stag-io.vercel.app',
