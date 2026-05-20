@@ -112,5 +112,5 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = 'all'
+        fields = '__all__'
         read_only_fields = ['user']
