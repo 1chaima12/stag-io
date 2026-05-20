@@ -14,6 +14,8 @@ export default function StudentProfile() {
     wilaya: "",
     bio: "",
     skills: [],
+    github: "",
+    portfolio: "",
     role: "student",
     digitalCV: null
   });
@@ -23,7 +25,6 @@ export default function StudentProfile() {
   const [loading, setLoading] = useState(true);
   const fileInputRef = useRef(null);
 
-  // جلب البيانات من السيرفر
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -38,6 +39,8 @@ export default function StudentProfile() {
           wilaya: data.student_details?.wilaya || "",
           bio: data.bio || "",
           skills: data.skills || [],
+          github: data.student_details?.github || "",
+          portfolio: data.student_details?.portfolio || "",
           digitalCV: data.student_details?.digital_cv
             ? { name: "My_Resume.pdf", size: "View PDF" }
             : null
@@ -81,19 +84,20 @@ export default function StudentProfile() {
     }
   };
 
-  // ✅ الإصلاح الرئيسي: template literal صحيح + await داخل try
   const handleSave = async () => {
     try {
       const formData = new FormData();
-      formData.append('fullname', `${draft.firstName} ${draft.lastName}`); // ✅ إصلاح
+      formData.append('fullname', `${draft.firstName} ${draft.lastName}`);
       formData.append('university', draft.university || "");
       formData.append('wilaya', draft.wilaya || "");
+      formData.append('github', draft.github || "");
+      formData.append('portfolio', draft.portfolio || "");
 
       if (draft.newFile) {
         formData.append('digital_cv', draft.newFile);
       }
 
-      await api.put('profile/', formData, { // ✅ await داخل try
+      await api.put('profile/', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
@@ -119,7 +123,7 @@ export default function StudentProfile() {
           <div>
             <h1 className="text-3xl font-black text-slate-900 tracking-tight">Student Profile</h1>
             <p className="text-slate-500">Update your information for companies to see</p>
-          </div>
+            </div>
           {!isEditing ? (
             <button onClick={() => { setDraft(profile); setIsEditing(true); }}
               className="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition-all"
@@ -128,14 +132,12 @@ export default function StudentProfile() {
             </button>
           ) : (
             <div className="flex gap-2">
-              <button
-                onClick={() => setIsEditing(false)}
+              <button onClick={() => setIsEditing(false)}
                 className="bg-slate-100 text-slate-600 px-6 py-2.5 rounded-xl font-bold"
               >
                 Cancel
               </button>
-              <button
-                onClick={handleSave}
+              <button onClick={handleSave}
                 className="bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg"
               >
                 Save Changes
@@ -154,40 +156,28 @@ export default function StudentProfile() {
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <label className="text-[11px] font-black text-slate-400 uppercase mb-2 block">First Name</label>
-                <input
-                  name="firstName"
-                  disabled={!isEditing}
-                  value={currentData.firstName}
+                <input name="firstName" disabled={!isEditing} value={currentData.firstName}
                   onChange={handleChange}
                   className="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-blue-500 transition-all disabled:opacity-70"
                 />
               </div>
               <div>
                 <label className="text-[11px] font-black text-slate-400 uppercase mb-2 block">Last Name</label>
-                <input
-                  name="lastName"
-                  disabled={!isEditing}
-                  value={currentData.lastName}
+                <input name="lastName" disabled={!isEditing} value={currentData.lastName}
                   onChange={handleChange}
                   className="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-blue-500 transition-all disabled:opacity-70"
                 />
               </div>
               <div className="md:col-span-2">
                 <label className="text-[11px] font-black text-slate-400 uppercase mb-2 block">University</label>
-                <input
-                  name="university"
-                  disabled={!isEditing}
-                  value={currentData.university}
+                <input name="university" disabled={!isEditing} value={currentData.university}
                   onChange={handleChange}
                   className="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-blue-500 transition-all disabled:opacity-70"
                 />
               </div>
               <div className="md:col-span-2">
                 <label className="text-[11px] font-black text-slate-400 uppercase mb-2 block">Wilaya</label>
-                <input
-                  name="wilaya"
-                  disabled={!isEditing}
-                  value={currentData.wilaya}
+                <input name="wilaya" disabled={!isEditing} value={currentData.wilaya}
                   onChange={handleChange}
                   className="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-blue-500 transition-all disabled:opacity-70"
                 />
@@ -197,14 +187,16 @@ export default function StudentProfile() {
 
           {/* Section 2: Skills */}
           <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm">
-            <h3 className="font-black text-slate-900 mb-4 text-lg">My Skills</h3>
+            <h3 className="font-black text-slate-900 mb-4 text-lg flex items-center gap-2">
+              <span className="w-2 h-6 bg-blue-600 rounded-full"></span> Technical Skills
+            </h3>
+            <p className="text-xs text-slate-400 mb-4">Select your technical skills (React, Java, Python...)</p>
             <div className="flex flex-wrap gap-2">
               {ALL_SKILLS.map(skill => {
                 const isSelected = currentData.skills.includes(skill);
-                if (!isEditing && !isSelected) return null;return (
-                  <button
-                    key={skill}
-                    disabled={!isEditing}
+                if (!isEditing && !isSelected) return null;
+                return (
+                  <button key={skill} disabled={!isEditing}
                     onClick={() => handleToggleSkill(skill)}
                     className={`px-5 py-2.5 rounded-xl text-xs font-bold border transition-all ${
                       isSelected
@@ -219,21 +211,52 @@ export default function StudentProfile() {
             </div>
           </div>
 
-          {/* Section 3: CV Upload ✅ إصلاح هيكل JSX */}
+          {/* Section 3: GitHub & Portfolio */}
+          <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm">
+            <h3 className="font-black text-slate-900 mb-6 flex items-center gap-2 text-lg">
+              <span className="w-2 h-6 bg-blue-600 rounded-full"></span> GitHub & Portfolio
+            </h3>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="text-[11px] font-black text-slate-400 uppercase mb-2 block">
+                  🐙 GitHub Link
+                </label>
+                <input
+                  name="github"
+                  disabled={!isEditing}
+                  value={currentData.github}
+                  onChange={handleChange}
+                  placeholder="https://github.com/username"
+                  className="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-blue-500 transition-all disabled:opacity-70"
+                />
+              </div>
+              <div>
+                <label className="text-[11px] font-black text-slate-400 uppercase mb-2 block">
+                  🌐 Portfolio Link
+                </label>
+                <input
+                  name="portfolio"
+                  disabled={!isEditing}
+                  value={currentData.portfolio}
+                  onChange={handleChange}
+                  placeholder="https://myportfolio.com"
+                  className="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-blue-500 transition-all disabled:opacity-70"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 4: Digital CV */}
           <div className="bg-slate-900 p-8 rounded-[2rem] text-white">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div>
-                <h3 className="font-black text-xl mb-2">Digital CV (PDF)</h3>
-                <p className="text-slate-400 text-sm max-w-sm">Upload your latest PDF resume.</p>
+                <h3 className="font-black text-xl mb-2">📄 Digital CV (PDF)</h3>
+                <p className="text-slate-400 text-sm max-w-sm">
+                  Upload your latest PDF resume. Companies noticed students with a CV <span className="text-blue-400 font-bold">3x faster</span>.
+                </p>
               </div>
               <div className="w-full md:w-auto">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept=".pdf"
-                  className="hidden"
-                />
+                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".pdf" className="hidden" />
                 {currentData.digitalCV ? (
                   <div className="bg-slate-800 p-4 rounded-2xl border border-slate-700 flex items-center gap-4">
                     <span className="text-2xl">📄</span>
@@ -242,18 +265,14 @@ export default function StudentProfile() {
                       <p className="text-[10px] text-slate-500">{currentData.digitalCV.size}</p>
                     </div>
                     {isEditing && (
-                      <button
-                        onClick={() => fileInputRef.current.click()}
+                      <button onClick={() => fileInputRef.current.click()}
                         className="text-blue-400 text-[10px] font-black uppercase"
                       >
                         Change
-                      </button>
-                    )}
+                      </button>)}
                   </div>
                 ) : (
-                  <button
-                    disabled={!isEditing}
-                    onClick={() => fileInputRef.current.click()}
+                  <button disabled={!isEditing} onClick={() => fileInputRef.current.click()}
                     className={`w-full md:w-auto px-8 py-4 rounded-2xl font-black text-sm transition-all ${
                       isEditing ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-slate-800 text-slate-500'
                     }`}
