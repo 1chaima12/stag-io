@@ -69,8 +69,8 @@ def get_dashboard_stats(request):
         stats = {
             "active_offers": Offer.objects.filter(company=company).count(),
             "total_applicants": Application.objects.filter(offer__company=company).count(),
-            "pending_review": Application.objects.filter(offercompany=company, statusiexact='PENDING').count(),
-            "accepted_interns": Application.objects.filter(offercompany=company, statusiexact='ACCEPTED').count(),
+            "pending_review": Application.objects.filter(offer__company=company, status__iexact='PENDING').count(),
+            "accepted_interns": Application.objects.filter(offer__company=company, status__iexact='ACCEPTED').count(),
         }
 
         # جلب المتقدمين الأخيرين مع حماية السيرفر من الانهيار أثناء السيرياليزر
