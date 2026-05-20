@@ -31,7 +31,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = 'all'
+        fields = '__all__'
 
 
 # Serializer خاص ببروفايل الشركة (GET و PATCH)
